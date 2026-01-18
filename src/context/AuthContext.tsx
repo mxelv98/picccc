@@ -29,10 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     const [session, setSession] = useState<Session | null>(null);
 
-    const fetchFullUserProfile = async (userId: string, accessToken: string) => {
+    const fetchFullUserProfile = async (sessionUser: any, accessToken: string) => {
         try {
-            // Use our backend endpoint to get the "merged" profile with role and VIP status
-            // because RLS prevents reading other tables sometimes or we want centralization
             const res = await fetch('/api/user/me', {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
@@ -41,18 +39,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const data = await res.json();
                 setUser(data.user);
             } else {
-                // Fallback if backend fails but auth is valid (shouldn't happen often)
-                console.error('Failed to fetch/sync user profile');
+                console.error('Failed to fetch/sync user profile, using fallback');
+                // Fallback: Use session data
+                setUser({
+                    id: sessionUser.id,
+                    email: sessionUser.email!,
+                    role: 'user', // Default
+                    vip_status: 'none'
+                });
             }
         } catch (e) {
             console.error(e);
+            // Fallback on error too
+            setUser({
+                id: sessionUser.id,
+                email: sessionUser.email!,
+                role: 'user',
+                vip_status: 'none'
+            });
         }
     };
 
     const refreshUser = async () => {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         if (currentSession?.user) {
-            await fetchFullUserProfile(currentSession.user.id, currentSession.access_token);
+            await fetchFullUserProfile(currentSession.user, currentSession.access_token);
         }
     };
 
@@ -63,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const handleSession = async (session: Session | null) => {
             setSession(session);
             if (session?.user) {
-                await fetchFullUserProfile(session.user.id, session.access_token);
+                await fetchFullUserProfile(session.user, session.access_token);
             } else {
                 setUser(null);
             }

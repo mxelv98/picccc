@@ -1,12 +1,20 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
-import { ArrowRight, Zap, Shield, TrendingUp, BarChart3, Lock } from 'lucide-react';
+import { ArrowRight, Zap, Shield, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import Modules from './Modules';
 
 export default function Landing() {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#050b14] flex items-center justify-center">
+                <div className="h-8 w-8 rounded-full border-2 border-pluxo-pink border-t-transparent animate-spin" />
+            </div>
+        );
+    }
 
     if (user) {
         return <Modules />;
