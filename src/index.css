@@ -9,9 +9,9 @@
     --background: 11 15 26;
     --foreground: 255 255 255;
   }
-  
+
   body {
-    @apply bg-pluxo-dark text-white antialiased font-sans overflow-x-hidden;
+    @apply bg-pluxo-dark text-white antialiased font-sans;
   }
 }
 
@@ -19,7 +19,7 @@
   .glass-panel {
     @apply bg-pluxo-card/80 backdrop-blur-md border border-white/10 shadow-xl;
   }
-  
+
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-pluxo-pink to-pluxo-blue;
   }

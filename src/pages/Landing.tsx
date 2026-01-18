@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Zap, Shield, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -29,7 +29,7 @@ export default function Landing() {
     }
 
     if (user) {
-        return <Modules />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     return (
