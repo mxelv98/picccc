@@ -12,11 +12,11 @@ export default function Landing() {
     useEffect(() => {
         if (loading) {
             document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto'; // or '' to remove style
         }
+
+        // Cleanup function - always runs when component unmounts or loading changes
         return () => {
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = '';
         };
     }, [loading]);
 

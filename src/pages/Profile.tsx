@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { User, Mail, Shield, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
+import CountdownTimer from '@/components/ui/CountdownTimer';
 
 export default function Profile() {
     const { user, logout } = useAuth();
@@ -42,7 +43,7 @@ export default function Profile() {
                                 {user.vip_status === 'active' && user.vipSubscription?.ends_at && (
                                     <div className="flex items-center gap-3 text-gray-300">
                                         <Calendar className="h-5 w-5 text-gray-500" />
-                                        Expires: {format(new Date(user.vipSubscription.ends_at), 'PP p')}
+                                        Expires: <span className="text-pluxo-pink font-bold ml-1"><CountdownTimer targetDate={user.vipSubscription.ends_at} /></span>
                                     </div>
                                 )}
                             </div>

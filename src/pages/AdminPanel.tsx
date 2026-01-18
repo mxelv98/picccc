@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Shield, Search, MessageSquare, Ban } from 'lucide-react';
+import CountdownTimer from '@/components/ui/CountdownTimer';
 
 interface UserData {
     id: string; // UUID
@@ -186,7 +187,11 @@ export default function AdminPanel() {
                                             )}
                                         </td>
                                         <td className="p-4 text-sm text-gray-400">
-                                            {user.vipEndsAt ? new Date(user.vipEndsAt).toLocaleDateString() : '-'}
+                                            {user.vipEndsAt && user.isVip ? (
+                                                <div className="text-pluxo-pink font-bold">
+                                                    <CountdownTimer targetDate={user.vipEndsAt} />
+                                                </div>
+                                            ) : '-'}
                                         </td>
                                         <td className="p-4">
                                             <div className="flex gap-2">
