@@ -112,9 +112,9 @@ export default function EliteModule() {
     const currentRiskColor = riskSetting === 'high' ? '#ef4444' : riskSetting === 'medium' ? '#f97316' : '#22c55e';
 
     return (
-        <div className="fixed inset-0 w-screen h-screen bg-[#030712] text-white overflow-hidden font-sans selection:bg-pluxo-pink/30">
+        <div className="min-h-screen bg-[#030712] text-white font-sans selection:bg-pluxo-pink/30 pb-12 relative overflow-x-hidden">
             {/* Cinematic Background */}
-            <div className="absolute inset-0 pointer-events-none z-0">
+            <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-20%] left-[10%] w-[80vw] h-[80vw] bg-purple-900/10 rounded-full blur-[150px] animate-pulse-fast" />
                 <div className="absolute bottom-[-20%] right-[10%] w-[80vw] h-[80vw] bg-blue-900/10 rounded-full blur-[150px]" />
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay" />
@@ -137,7 +137,7 @@ export default function EliteModule() {
             </div>
 
             {/* Main Layout Grid */}
-            <div className="relative z-10 w-full h-full grid grid-rows-[auto_1fr_auto] p-4 md:p-8 lg:p-12 box-border">
+            <div className="relative z-10 w-full min-h-screen grid grid-rows-[auto_1fr_auto] p-4 md:p-8 lg:p-12 box-border gap-8">
 
                 {/* 1. Header Section */}
                 <header className="flex justify-between items-start mb-4">

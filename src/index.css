@@ -12,6 +12,7 @@
 
   body {
     @apply bg-pluxo-dark text-white antialiased font-sans;
+    overflow-y: auto !important;
   }
 }
 

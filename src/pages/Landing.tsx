@@ -9,16 +9,7 @@ import Modules from './Modules';
 export default function Landing() {
     const { user, loading } = useAuth();
 
-    useEffect(() => {
-        if (loading) {
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Cleanup function - always runs when component unmounts or loading changes
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [loading]);
+    // Scroll lock logic removed to prevent stuck scrolling issues
 
     if (loading) {
         return (
