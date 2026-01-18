@@ -34,16 +34,38 @@ export default function AdminPanel() {
 
     const fetchUsers = async () => {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch('/api/admin/users', {
-                headers: { Authorization: `Bearer ${session?.access_token}` },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setUsers(data);
-            }
+            // Fetch profiles
+            const { data: profiles, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            // For each profile, fetch active subscription if exists
+            const usersWithSubs = await Promise.all(profiles.map(async (profile: any) => {
+                const { data: sub } = await supabase
+                    .from('vip_subscriptions')
+                    .select('*')
+                    .eq('user_id', profile.id)
+                    .eq('active', true)
+                    .gt('ends_at', new Date().toISOString())
+                    .single();
+
+                return {
+                    id: profile.id,
+                    email: profile.email || 'No Email', // fallback
+                    role: profile.role,
+                    created_at: profile.created_at,
+                    isVip: !!sub,
+                    planType: sub?.plan_type || null,
+                    vipEndsAt: sub?.ends_at
+                };
+            }));
+
+            setUsers(usersWithSubs);
         } catch (err) {
-            console.error(err);
+            console.error('Error fetching users:', err);
         } finally {
             setLoading(false);
         }
@@ -53,28 +75,40 @@ export default function AdminPanel() {
         if (!selectedUser) return;
         setProcessing(true);
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`/api/admin/users/${selectedUser.id}/vip`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${session?.access_token}`
-                },
-                body: JSON.stringify({
-                    duration: parseInt(duration),
-                    unit,
-                    planType
-                }),
-            });
+            // Calculate end date
+            const now = new Date();
+            let endsAt = new Date();
 
-            if (res.ok) {
-                setShowGrantModal(false);
-                fetchUsers();
-            } else {
-                alert('Failed to grant access');
-            }
+            const amount = parseInt(duration);
+            if (unit === 'minutes') endsAt.setMinutes(now.getMinutes() + amount);
+            if (unit === 'hours') endsAt.setHours(now.getHours() + amount);
+            if (unit === 'days') endsAt.setDate(now.getDate() + amount);
+
+            // 1. Deactivate existing active subs for this user
+            await supabase
+                .from('vip_subscriptions')
+                .update({ active: false })
+                .eq('user_id', selectedUser.id)
+                .eq('active', true);
+
+            // 2. Insert new sub
+            const { error } = await supabase
+                .from('vip_subscriptions')
+                .insert({
+                    user_id: selectedUser.id,
+                    plan_type: planType,
+                    starts_at: now.toISOString(),
+                    ends_at: endsAt.toISOString(),
+                    active: true
+                });
+
+            if (error) throw error;
+
+            setShowGrantModal(false);
+            fetchUsers();
         } catch (err) {
-            console.error(err);
+            console.error('Error granting VIP:', err);
+            alert('Failed to grant access');
         } finally {
             setProcessing(false);
         }
