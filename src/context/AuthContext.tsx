@@ -29,28 +29,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     const [session, setSession] = useState<Session | null>(null);
 
-    const fetchFullUserProfile = async (sessionUser: any, accessToken: string) => {
+    const fetchFullUserProfile = async (sessionUser: any, _accessToken: string) => {
         try {
-            const res = await fetch('/api/user/me', {
-                headers: { Authorization: `Bearer ${accessToken}` }
+            // 1. Fetch Profile (Role)
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', sessionUser.id)
+                .single();
+
+            // 2. Fetch VIP Subscription (Status)
+            const { data: vipSub } = await supabase
+                .from('vip_subscriptions')
+                .select('*')
+                .eq('user_id', sessionUser.id)
+                .eq('active', true)
+                .order('ends_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            let vipStatus: 'active' | 'expired' | 'none' = 'none';
+            if (vipSub) {
+                const now = new Date();
+                const endsAt = new Date(vipSub.ends_at);
+                if (endsAt > now) {
+                    vipStatus = 'active';
+                } else {
+                    vipStatus = 'expired';
+                }
+            }
+
+            console.log("Logged in as:", profile?.role || 'user');
+
+            setUser({
+                id: sessionUser.id,
+                email: sessionUser.email!,
+                role: profile?.role === 'admin' ? 'admin' : 'user',
+                vip_status: vipStatus,
+                plan_type: vipSub?.plan_type,
+                vipSubscription: vipSub ? {
+                    ends_at: vipSub.ends_at,
+                    active: vipSub.active,
+                    plan_type: vipSub.plan_type
+                } : undefined
             });
 
-            if (res.ok) {
-                const data = await res.json();
-                setUser(data.user);
-            } else {
-                console.error('Failed to fetch/sync user profile, using fallback');
-                // Fallback: Use session data
-                setUser({
-                    id: sessionUser.id,
-                    email: sessionUser.email!,
-                    role: 'user', // Default
-                    vip_status: 'none'
-                });
-            }
         } catch (e) {
-            console.error(e);
-            // Fallback on error too
+            console.error("Error fetching user profile:", e);
+            // Fallback
             setUser({
                 id: sessionUser.id,
                 email: sessionUser.email!,
