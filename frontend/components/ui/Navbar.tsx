@@ -42,8 +42,8 @@ export const Navbar = () => {
 
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-8">
-                    <Link to="/" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Home</Link>
-                    <Link to="/modules" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Predictions</Link>
+                    <Link to="/plans" className="text-gray-400 hover:text-pluxo-pink transition-colors text-xs font-bold uppercase tracking-widest italic">Plans</Link>
+                    <Link to="/elite" className="text-white bg-pluxo-pink/20 border border-pluxo-pink/30 px-3 py-1 rounded-md hover:bg-pluxo-pink/30 transition-all text-xs font-black uppercase tracking-widest italic">Elite Mode</Link>
                     <a href="https://t.me/pluxopredictor" target="_blank" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Telegram</a>
                 </div>
 

@@ -2,14 +2,14 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from '@/components/ui/Navbar';
 import { Rocket, Twitter, MessageSquare, ShieldCheck } from 'lucide-react';
 
-export default function Layout() {
+export default function Layout({ children }: { children?: React.ReactNode }) {
     return (
         <div className="min-h-screen flex flex-col font-sans text-gray-100 selection:bg-pluxo-pink/30 bg-pluxo-dark">
             <Navbar />
 
             {/* Content */}
             <main className="flex-1">
-                <Outlet />
+                {children || <Outlet />}
             </main>
 
             {/* Professional Footer */}

@@ -8,6 +8,7 @@ import EliteModule from '@/pages/EliteModule';
 import StandardModule from '@/pages/StandardModule';
 import AdminPanel from '@/pages/AdminPanel';
 import Profile from '@/pages/Profile';
+import Subscriptions from '@/pages/Subscriptions';
 import ProtectedRoute from '@/components/layout/ProtectedRoute'; // Will create this next
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
                 <Route path="modules" element={<Modules />} />
-                <Route path="standard" element={<StandardModule />} />
+                <Route path="plans" element={<Subscriptions />} />
 
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
