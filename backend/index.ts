@@ -16,7 +16,10 @@ const missing = REQUIRED_ENV.filter(key => !process.env[key]);
 
 if (missing.length > 0) {
     console.error('FATAL: CRITICAL SECRETS MISSING', missing);
-    process.exit(1); // Crash app as per security rules
+    console.log('Ensure they are defined in your .env file.');
+    process.exit(1);
+} else {
+    console.log('✅ Critical Security Secrets Verified.');
 }
 
 const app = express();
