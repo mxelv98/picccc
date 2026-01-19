@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Pluxo SaaS Platform
 
-# Run and deploy your AI Studio app
+Professional trading signal prediction platform with a "Secret Case" security architecture.
 
-This contains everything you need to run your app locally.
+## 📁 Repository Structure
 
-View your app in AI Studio: https://ai.studio/apps/drive/1NzTkf2ZM0oWdAviOabm5k8xnzCQ8PBUU
+- **`/frontend`**: React/Vite/Tailwind UI.
+- **`/backend`**: Node.js/Express API with isolated sensitive logic.
+- **`/database`**: SQL schemas and migration files.
+- **`/docs`**: Security policies and system guides.
 
-## Run Locally
+## 🚀 Quick Start (Development)
 
-**Prerequisites:**  Node.js
+### 1. Backend Setup
+```bash
+cd backend
+cp .env.example .env.local
+npm install
+npm run dev
+```
 
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛡 Security (The "Secret Case")
+All sensitive logic (prediction algorithms, VIP validation, admin roles) is processed strictly on the server side. The frontend only consumes sanitized API responses. 
+
+Refer to [SECURITY.md](docs/SECURITY.md) for more details.
+
+## 🔑 Environment Variables
+You MUST define these in your `.env.local` to run the project.
+See [.env.example](.env.example) for the list of required keys.

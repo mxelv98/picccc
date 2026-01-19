@@ -7,6 +7,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { predictionService } from '@/services/predictionService';
 
 interface DataPoint {
     time: number;
@@ -53,20 +54,16 @@ export default function StandardModule() {
         }
     }, [hasUnlimitedAccess]);
 
-    const generatePrediction = () => {
+    const generatePrediction = async () => {
         if (!hasUnlimitedAccess && hasUsed) return;
+        if (!user?.id) return;
 
         setIsGenerating(true);
         setShowUpgradePrompt(false);
 
-        setTimeout(() => {
-            const prediction: DataPoint[] = Array.from({ length: 40 }, (_, i) => ({
-                time: i,
-                value: Math.max(1.00, 1.2 + Math.random() * 3 + Math.sin(i / 4) * 0.8)
-            }));
-
+        try {
+            const { prediction } = await predictionService.generate(user.id, 'standard');
             setData(prediction);
-            setIsGenerating(false);
 
             if (!hasUnlimitedAccess) {
                 setHasUsed(true);
@@ -74,7 +71,11 @@ export default function StandardModule() {
                 localStorage.setItem('standard_module_data', JSON.stringify(prediction));
                 setTimeout(() => setShowUpgradePrompt(true), 1500);
             }
-        }, 1500);
+        } catch (error) {
+            console.error('Prediction failed:', error);
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     // Shared Components

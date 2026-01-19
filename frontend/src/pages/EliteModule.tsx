@@ -6,6 +6,8 @@ import { Shield, Settings, Target, Activity, Rocket, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { useAuth } from '@/context/AuthContext';
+import { predictionService } from '@/services/predictionService';
 
 // Types
 type RiskLevel = 'low' | 'medium' | 'high';
@@ -67,6 +69,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export default function EliteModule() {
+    const { user } = useAuth();
     const isMobile = useIsMobile();
     const [data, setData] = useState<DataPoint[]>([]);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -82,24 +85,18 @@ export default function EliteModule() {
         setData(initial);
     }, []);
 
-    const generatePrediction = () => {
+    const generatePrediction = async () => {
+        if (!user?.id) return;
         setIsGenerating(true);
-        setTimeout(() => {
-            const lastTime = data.length > 0 ? data[data.length - 1].time : 0;
-            let base = 1.0;
-            let volatility = 1.0;
-            if (riskSetting === 'low') { base = 1.5; volatility = 0.5; }
-            if (riskSetting === 'high') { base = 2.5; volatility = 3.0; }
-            const val = Math.max(1.00, base + (Math.random() - 0.4) * volatility * 2);
-            let risk: RiskLevel = 'low';
-            if (val > 2) risk = 'medium';
-            if (val > 5) risk = 'high';
-            const newPoint: DataPoint = { time: lastTime + 1, value: val, risk };
-            const newData = [...data, newPoint];
-            if (newData.length > 50) newData.shift();
-            setData(newData);
+
+        try {
+            const { prediction } = await predictionService.generate(user.id, 'elite', riskSetting);
+            setData(prediction);
+        } catch (error) {
+            console.error('Elite prediction failed:', error);
+        } finally {
             setIsGenerating(false);
-        }, 800);
+        }
     };
 
     const currentRiskColor = riskSetting === 'high' ? '#ff2d95' : riskSetting === 'medium' ? '#f97316' : '#22c55e';

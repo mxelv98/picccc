@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import adminRoutes from './routes/admin.js';
-import userRoutes from './routes/user.js'; // Optional if not pure client-side
+import adminRoutes from './api/admin.js';
+import userRoutes from './api/user.js';
+import predictionRoutes from './api/predictions.js';
 
 dotenv.config();
 
@@ -13,9 +14,10 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-// app.use('/api/auth', authRoutes); // Auth is now handled by Supabase on Frontend
+// app.use('/api/auth', authRoutes); 
 app.use('/api/admin', adminRoutes);
-app.use('/api/user', userRoutes);   // We might keep this for custom profile logic if needed
+app.use('/api/user', userRoutes);
+app.use('/api/predictions', predictionRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
