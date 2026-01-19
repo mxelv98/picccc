@@ -30,7 +30,10 @@ router.post('/generate',
             const { type, riskSetting = 'medium' } = req.body;
 
             // 1. Double check Elite tier if requested
-            if (type === 'elite' && sub.plan_type !== 'vip') {
+            // ADMIN OVERRIDE: If user is admin, they bypass the sub check
+            const isAdmin = user?.role === 'admin' || (req as any).profile?.role === 'admin';
+
+            if (type === 'elite' && !isAdmin && (!sub || sub.plan_type !== 'vip')) {
                 return res.status(403).json({ error: 'RESTRICTED: Elite tier required for this module' });
             }
 

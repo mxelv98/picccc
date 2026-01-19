@@ -45,11 +45,16 @@ export default function StandardModule() {
         if (hasUnlimitedAccess) return;
 
         const used = localStorage.getItem('standard_module_used');
+        const hidePrompt = localStorage.getItem('hide_upgrade_prompt');
+
         if (used === 'true') {
             setHasUsed(true);
             const savedData = localStorage.getItem('standard_module_data');
             if (savedData) {
                 setData(JSON.parse(savedData));
+            }
+            if (hidePrompt === 'true') {
+                setShowUpgradePrompt(false);
             }
         }
     }, [hasUnlimitedAccess]);
@@ -69,7 +74,11 @@ export default function StandardModule() {
                 setHasUsed(true);
                 localStorage.setItem('standard_module_used', 'true');
                 localStorage.setItem('standard_module_data', JSON.stringify(prediction));
-                setTimeout(() => setShowUpgradePrompt(true), 1500);
+
+                const hidePrompt = localStorage.getItem('hide_upgrade_prompt');
+                if (hidePrompt !== 'true') {
+                    setTimeout(() => setShowUpgradePrompt(true), 1500);
+                }
             }
         } catch (error) {
             console.error('Prediction failed:', error);
@@ -108,14 +117,17 @@ export default function StandardModule() {
                                 Pattern identified. Detailed neural breakdown and next 50 predictive nodes are restricted to VUP members.
                             </p>
                             <div className="flex gap-4">
-                                <Link to="/elite" className="flex-1">
+                                <Link to="/plans" className="flex-1">
                                     <Button variant="premium" className="w-full text-sm md:text-base font-bold italic">
                                         Unlock Now
                                     </Button>
                                 </Link>
                                 <Button
                                     variant="ghost"
-                                    onClick={() => setShowUpgradePrompt(false)}
+                                    onClick={() => {
+                                        setShowUpgradePrompt(false);
+                                        localStorage.setItem('hide_upgrade_prompt', 'true');
+                                    }}
                                     className="text-gray-500 hover:text-white"
                                 >
                                     Later
@@ -190,7 +202,7 @@ export default function StandardModule() {
                                     </div>
                                     <h3 className="text-xl font-bold uppercase italic mb-2">Protocol Locked</h3>
                                     <p className="text-xs text-gray-400 mb-6">Your trial has ended. Subscribe to continue.</p>
-                                    <Link to="/elite" className="w-full">
+                                    <Link to="/plans" className="w-full">
                                         <Button variant="premium" className="w-full h-12 text-sm italic">Upgrade Now</Button>
                                     </Link>
                                 </div>
@@ -360,7 +372,7 @@ export default function StandardModule() {
                                         <p className="text-gray-400 mb-10 leading-relaxed">
                                             The trial analysis cycle has completed. Continuous neural monitoring requires an active VUP link.
                                         </p>
-                                        <Link to="/elite" className="block w-full">
+                                        <Link to="/plans" className="block w-full">
                                             <Button variant="premium" className="w-full h-16 text-xl" size="xl">
                                                 Upgrade to VUP Access
                                             </Button>

@@ -75,8 +75,8 @@ export default function EliteModule() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [riskSetting, setRiskSetting] = useState<RiskLevel>('medium');
     const [showSettings, setShowSettings] = useState(!isMobile);
+    const [error, setError] = useState<string | null>(null);
 
-    const isElite = user?.role === 'admin' || (user?.vip_status === 'active' && user?.plan_type === 'vip');
 
     useEffect(() => {
         const initial = Array.from({ length: 20 }, (_, i) => ({
@@ -90,12 +90,14 @@ export default function EliteModule() {
     const generatePrediction = async () => {
         if (!user?.id) return;
         setIsGenerating(true);
+        setError(null);
 
         try {
             const { prediction } = await predictionService.generate(user.id, 'elite', riskSetting);
             setData(prediction);
-        } catch (error) {
-            console.error('Elite prediction failed:', error);
+        } catch (err: any) {
+            console.error('Elite prediction failed:', err);
+            setError(err.message || 'Encryption fault. System resyncing...');
         } finally {
             setIsGenerating(false);
         }
@@ -203,7 +205,12 @@ export default function EliteModule() {
                     </GlassCard>
                 </div>
 
-                <div className="px-4 pb-8 relative z-10">
+                <div className="px-4 pb-8 relative z-10 flex flex-col gap-4">
+                    {error && (
+                        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-mono text-center animate-shake">
+                            {error}
+                        </div>
+                    )}
                     <Button
                         size="xl"
                         variant="premium"
@@ -411,7 +418,7 @@ export default function EliteModule() {
                 </div>
 
                 {/* 3. Footer / Action Area */}
-                <div className="mt-8 flex justify-center items-center relative">
+                <div className="mt-8 flex flex-col items-center gap-6 relative">
                     {/* Background glow for button */}
                     <motion.div
                         animate={{
@@ -420,6 +427,13 @@ export default function EliteModule() {
                         }}
                         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-40 blur-[80px] transition-colors duration-700 z-0"
                     />
+
+                    {error && (
+                        <div className="z-20 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono animate-shake flex items-center gap-3">
+                            <Shield className="h-4 w-4" />
+                            {error}
+                        </div>
+                    )}
 
                     <Button
                         size="xl"

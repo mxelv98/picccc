@@ -39,7 +39,7 @@ export default function Modules() {
                     </div>
                     <div className="flex gap-4 mt-4 md:mt-0">
                         {!isVip && !isVupOrVip && (
-                            <Link to="/elite">
+                            <Link to="/plans">
                                 <Button size="sm" className="bg-gradient-to-r from-pluxo-pink to-pluxo-blue text-white border-0 shadow-[0_0_15px_rgba(236,72,153,0.3)] animate-pulse-slow">
                                     Upgrade Plan
                                 </Button>
@@ -78,7 +78,7 @@ export default function Modules() {
                                 Try Standard Module
                             </Button>
                         </Link>
-                        <Link to="/elite">
+                        <Link to={isVip ? "/elite" : "/plans"}>
                             <Button size="lg" className={`rounded-full px-8 border-none text-white transition-all font-bold ${isVip
                                 ? 'bg-green-600 hover:bg-green-500 shadow-[0_0_20px_rgba(34,197,94,0.4)]'
                                 : 'bg-gradient-to-r from-pluxo-pink to-pluxo-blue hover:scale-105 shadow-[0_0_30px_rgba(236,72,153,0.4)]'
@@ -179,7 +179,7 @@ export default function Modules() {
                             </div>
 
                             <div className="p-6 border-t border-white/5 bg-gradient-to-t from-pluxo-pink/5 to-transparent">
-                                <Link to="/elite">
+                                <Link to={isVip ? "/elite" : "/plans"}>
                                     <Button className={`w-full text-white border-none font-bold ${isVip
                                         ? 'bg-green-600 hover:bg-green-500 shadow-[0_0_20px_rgba(34,197,94,0.3)]'
                                         : 'bg-gradient-to-r from-pluxo-pink to-pluxo-blue hover:shadow-[0_0_20px_rgba(236,72,153,0.4)]'
