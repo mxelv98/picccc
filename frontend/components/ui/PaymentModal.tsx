@@ -4,6 +4,8 @@ import { X, Shield, Lock, Ticket, Timer, CheckCircle, ArrowRight, Loader2 } from
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import { paymentService } from '@/services/paymentService';
 
 interface PaymentModalProps {
     tier: 'VUP' | 'ELITE';
@@ -20,6 +22,7 @@ type Step = 'preview' | 'processing' | 'success';
 
 export default function PaymentModal({ tier, option, onClose }: PaymentModalProps) {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [step, setStep] = useState<Step>('preview');
     const [promoCode, setPromoCode] = useState('');
     const [discount, setDiscount] = useState(0);
@@ -29,28 +32,52 @@ export default function PaymentModal({ tier, option, onClose }: PaymentModalProp
     const basePrice = parseFloat(option.price);
     const finalPrice = basePrice * (1 - discount / 100);
 
-    const handleApplyPromo = () => {
+    const handleApplyPromo = async () => {
         setIsValidating(true);
         setError(null);
 
-        // Simulate validation
-        setTimeout(() => {
-            if (promoCode.toUpperCase() === 'PLUXO20') {
-                setDiscount(20);
-            } else {
-                setError('Invalid or expired promo code');
-                setDiscount(0);
-            }
+        try {
+            const data = await paymentService.validatePromo(promoCode);
+            setDiscount(data.discount);
+        } catch (err: any) {
+            setError(err.message || 'Invalid or expired promo code');
+            setDiscount(0);
+        } finally {
             setIsValidating(false);
-        }, 1000);
+        }
     };
 
-    const handleProceed = () => {
+    const handleProceed = async () => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+
         setStep('processing');
-        // Simulate payment gateway
-        setTimeout(() => {
-            setStep('success');
-        }, 3000);
+        setError(null);
+
+        try {
+            const { checkoutUrl } = await paymentService.initiateCheckout({
+                userId: user.id,
+                planId: tier === 'ELITE' ? 'vip_elite' : 'vip_vup',
+                timeOption: option.duration,
+                promoCode: discount > 0 ? promoCode : undefined
+            });
+
+            console.log('Payment initialized:', checkoutUrl);
+
+            // In a real app, we might redirect to checkoutUrl
+            // window.location.href = checkoutUrl;
+
+            // For now, let's keep the internal success flow
+            setTimeout(() => {
+                setStep('success');
+            }, 2000);
+
+        } catch (err: any) {
+            setError(err.message || 'Failed to initiate checkout');
+            setStep('preview');
+        }
     };
 
     const getExpirationPreview = () => {

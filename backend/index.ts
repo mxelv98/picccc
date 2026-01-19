@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import adminRoutes from './api/admin.js';
 import userRoutes from './api/user.js';
 import predictionRoutes from './api/predictions.js';
+import promoRoutes from './api/promo.js';
+import checkoutRoutes from './api/checkout.js';
 
 dotenv.config();
 
@@ -27,6 +29,8 @@ app.use(express.json());
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/predictions', predictionRoutes);
+app.use('/api/promo', promoRoutes);
+app.use('/api/checkout', checkoutRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
