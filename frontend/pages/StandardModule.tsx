@@ -39,7 +39,7 @@ export default function StandardModule() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
-    const hasUnlimitedAccess = user?.vip_status === 'active' && (user?.plan_type === 'vup' || user?.plan_type === 'vip');
+    const hasUnlimitedAccess = user?.role === 'admin' || (user?.vip_status === 'active' && (user?.plan_type === 'vup' || user?.plan_type === 'vip'));
 
     useEffect(() => {
         if (hasUnlimitedAccess) return;
@@ -140,7 +140,7 @@ export default function StandardModule() {
                             hasUnlimitedAccess ? "border-green-500/30 text-green-400 bg-green-500/5" : "border-pluxo-blue/30 text-pluxo-blue bg-pluxo-blue/5"
                         )}>
                             <span className="flex h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
-                            {hasUnlimitedAccess ? "Unlimited Access" : "Trial Mode"}
+                            {user?.role === 'admin' ? "Admin Access" : hasUnlimitedAccess ? "Unlimited Access" : "Trial Mode"}
                         </div>
                         <h1 className="text-3xl font-black italic tracking-tight uppercase">
                             VUP <span className="text-gradient">MOBILE</span>
@@ -254,7 +254,7 @@ export default function StandardModule() {
                                     <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", hasUnlimitedAccess ? "bg-green-400" : "bg-pluxo-blue")}></span>
                                     <span className={cn("relative inline-flex rounded-full h-2 w-2", hasUnlimitedAccess ? "bg-green-500" : "bg-pluxo-blue")}></span>
                                 </span>
-                                {hasUnlimitedAccess ? "UNLIMITED ACCESS" : "STANDARD MODE"}
+                                {user?.role === 'admin' ? "ADMIN CLEARANCE" : hasUnlimitedAccess ? "UNLIMITED ACCESS" : "STANDARD MODE"}
                             </div>
                         </motion.div>
                         <motion.h1

@@ -16,7 +16,7 @@ export const roleGuard = (requiredRole?: string, requiredPlan?: 'vip' | 'vup') =
                 .from('profiles')
                 .select('role')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle(); // Use maybeSingle to avoid 406 errors if not found
 
             // 2. Fetch Active Subscription
             const { data: sub } = await supabase
@@ -24,10 +24,17 @@ export const roleGuard = (requiredRole?: string, requiredPlan?: 'vip' | 'vup') =
                 .select('plan_type, ends_at, active')
                 .eq('user_id', user.id)
                 .eq('active', true)
-                .gt('ends_at', new Date().toISOString()) // Expiration check
-                .single();
+                .gt('ends_at', new Date().toISOString())
+                .maybeSingle(); // maybeSingle is safer here
 
-            // ADMIN LOCK
+            // ADMIN OVERRIDE: If the user is an admin, they pass all subsequent checks
+            if (profile?.role === 'admin') {
+                (req as any).profile = profile;
+                (req as any).subscription = sub;
+                return next();
+            }
+
+            // ADMIN LOCK (for specific admin-only routes)
             if (requiredRole === 'admin' && profile?.role !== 'admin') {
                 return res.status(403).json({ error: 'RESTRICTED: Admin clearance required' });
             }

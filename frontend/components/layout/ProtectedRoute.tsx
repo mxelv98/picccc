@@ -29,6 +29,9 @@ export default function ProtectedRoute({ requiredRole, requiredPlan }: Protected
 
     // Plan Check
     if (requiredPlan) {
+        // ADMIN OVERRIDE
+        if (user.role === 'admin') return <Outlet />;
+
         const isVip = user.vip_status === 'active' && user.plan_type === 'vip';
         const isVup = user.vip_status === 'active' && user.plan_type === 'vup';
 

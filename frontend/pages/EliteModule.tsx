@@ -76,6 +76,8 @@ export default function EliteModule() {
     const [riskSetting, setRiskSetting] = useState<RiskLevel>('medium');
     const [showSettings, setShowSettings] = useState(!isMobile);
 
+    const isElite = user?.role === 'admin' || (user?.vip_status === 'active' && user?.plan_type === 'vip');
+
     useEffect(() => {
         const initial = Array.from({ length: 20 }, (_, i) => ({
             time: i,
@@ -144,10 +146,10 @@ export default function EliteModule() {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <div className="h-1.5 w-1.5 rounded-full bg-pluxo-pink animate-pulse" />
-                            <span className="text-pluxo-pink text-[8px] font-mono tracking-[0.3em] uppercase font-bold">Priority Link</span>
+                            <span className="text-pluxo-pink text-[8px] font-mono tracking-[0.3em] uppercase font-bold">{user?.role === 'admin' ? "Admin Access" : "Priority Link"}</span>
                         </div>
                         <h1 className="text-3xl font-black italic tracking-tight uppercase">
-                            ELITE <span className="text-gradient">MOBILE</span>
+                            ELITE <span className="text-gradient">{user?.role === 'admin' ? "ADMIN" : "MOBILE"}</span>
                         </h1>
                     </div>
                     <button
@@ -274,7 +276,7 @@ export default function EliteModule() {
                             <span className="text-pluxo-pink text-[10px] font-mono tracking-[0.4em] uppercase font-bold">Priority Link Established</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black tracking-tight uppercase italic text-gradient">
-                            ELITE <span className="text-white">NODE</span>
+                            ELITE <span className="text-white">{user?.role === 'admin' ? "ADMIN NODE" : "NODE"}</span>
                         </h1>
                     </div>
 
